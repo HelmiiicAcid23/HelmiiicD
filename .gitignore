@@ -1,6 +1,10 @@
 /tmp
 /out-tsc
-
+node_modules
+dist
+.idea
+uploads
+.env
 /node_modules
 npm-debug.log*
 yarn-debug.log*
