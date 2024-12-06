@@ -1,14 +1,14 @@
 import {Router} from 'express';
-import subCatagoriesService from "./SubCatagories.service";
+import SubCatagoriesService from "./SubCatagories.service";
 
 const SubcatagoriesRouter: Router = Router({mergeParams: true});
 
 SubcatagoriesRouter.route('/')
-    .get(subCatagoriesService.filterSubcategories, subCatagoriesService.getAll)
-    .post(subCatagoriesService.setCatagoryId, subCatagoriesService.createOne);
+    .get(SubCatagoriesService.filterSubcategories, SubCatagoriesService.getAll)
+    .post(SubCatagoriesService.setCatagoryId, SubCatagoriesService.createOne);
 SubcatagoriesRouter.route('/:id')
-    .get(subCatagoriesService.getOne)
-    .put(subCatagoriesService.updateOne)
-    .delete(subCatagoriesService.deleteOne);
+    .get(SubCatagoriesService.getOne)
+    .put(SubCatagoriesService.updateOne)
+    .delete(SubCatagoriesService.deleteOne);
 
 export default SubcatagoriesRouter;
