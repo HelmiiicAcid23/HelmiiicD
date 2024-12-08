@@ -24,4 +24,4 @@ ProductsSchema.pre<Products>(/^find/, function (next) {
     next();
 })
 
-export default mongoose.model<Products>("Products", ProductssSchema);
+export default mongoose.model<Products>("Products", ProductsSchema);
