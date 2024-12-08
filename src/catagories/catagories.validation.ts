@@ -25,14 +25,13 @@ class catagoryValidate {
                 if (catagory && catagory._id!.toString() !== req.params?.id.toString()) {
                 }
                 throw new Error(`${req.__('catagory_already_exists')}`);
-                return true;
             }),
         validatorMiddleware]
     getOne = [
         param('id').isMongoId().withMessage((valu, {req}) => req.__('invalid_id')),
         validatorMiddleware]
     deleteOne = [
-        param('id').isMongoId().withMessage((valu, {req}) => req.__('invalid_id')),
+        param('id').isMongoId().withMessage(({req}) => req.__('invalid_id')),
         validatorMiddleware]
 }
 

@@ -1,8 +1,10 @@
 import {body, param} from "express-validator";
 import validatorMiddleware from "../middlewares/validator.middleware";
+import subcatagoriesSchema from "../SubCatagories/SubCatagories.schema";
+import catagoriesSchema from "../catagories/catagories.schema";
 
 ////////////////////////////////all endpoints have their validation yastaa///////////////////////////////
-class subcatagoryValidate {
+class ProductsValidate {
     createOne =
         [
             body('name').notEmpty().withMessage((valu, {req}) => req.__('validation_field')).isLength({
@@ -27,16 +29,16 @@ class subcatagoryValidate {
                 .notEmpty().withMessage((valu, {req}) => req.__('validation_field'))
                 .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
                 .custom(async (val: string, {req}) => {
-                    const category = await categoriesSchema.findById(val);
+                    const category = await catagoriesSchema.findById(val);
                     if (!category) throw new Error(`${req.__('validation_value')}`);
                     return true;
                 }),
             body('subcategory')
                 .notEmpty().withMessage((valu, {req}) => req.__('validation_field'))
                 .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
-                .custom(async (val: string, {req}) => {
-                    const subcategory = await subcategoriesSchema.findById(valu);
-                    if (!subcategory || subcategory.category._id!.toString() !== req.body.category.toString()) throw new Error(`${req.__('validation_value')}`);
+                .custom(async (valu: string, {req}) => {
+                    const subcategory = await subcatagoriesSchema.findById(valu);
+                    if (!subcategory || subcategory.catagory._id!.toString() !== req.body.category.toString()) throw new Error(`${req.__('validation_value')}`);
                     return true;
                 })
             , validatorMiddleware]
@@ -61,15 +63,15 @@ class subcatagoryValidate {
         body('category').optional()
             .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
             .custom(async (val: string, {req}) => {
-                const category = await categoriesSchema.findById(val);
+                const category = await catagoriesSchema.findById(val);
                 if (!category) throw new Error(`${req.__('validation_value')}`);
                 return true;
             }),
         body('subcategory').optional()
             .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
-            .custom(async (val: string, {req}) => {
-                const subcategory = await subcategoriesSchema.findById(valu);
-                if (!subcategory || subcategory.category._id!.toString() !== req.body.category.toString()) throw new Error(`${req.__('validation_value')}`);
+            .custom(async (valu: string, {req}) => {
+                const subcategory = await subcatagoriesSchema.findById(valu);
+                if (!subcategory || subcategory.catagory._id!.toString() !== req.body.category.toString()) throw new Error(`${req.__('validation_value')}`);
                 return true;
             })
         , validatorMiddleware]
@@ -81,5 +83,5 @@ class subcatagoryValidate {
         validatorMiddleware]
 }
 
-const subcatagoryValidation = new subcatagoryValidate();
-export default subcatagoryValidation;
+const ProductsValidation = new ProductsValidate();
+export default ProductsValidation;
