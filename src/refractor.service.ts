@@ -2,14 +2,18 @@ import {NextFunction, Request, Response} from 'express'
 import asyncHandler from "express-async-handler"
 import mongoose from "mongoose";
 import ApiErrors from "./utiles/api.errors";
+import Features from "./utiles/features";
 
 class RefractorService {
-    getAll = <modeltype>(model: mongoose.Model<any>) =>
-        asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    getAll = <modeltype>(model: mongoose.Model<any>, modelName?: string) =>
+        asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
             let filterData: any = {};
             if (req.filterData) filterData = req.filterData;
-            const document: modeltype[] = await model.find(filterData);
-            res.status(200).json({data: document});
+            const documentsCount = await model.find(filterData).countDocuments();
+            const features = new Features(model.find(filterData), req.query).filter().sort().limitfields().search(modelName!).pagination(documentsCount);
+            const {mongooseQuery, paginationResult} = features;
+            const document: modeltype[] = await mongooseQuery;
+            res.status(200).json({pagination: paginationResult, data: document});
         });
 
     createOne = <modeltype>(model: mongoose.Model<any>) =>
@@ -35,7 +39,6 @@ class RefractorService {
             if (!Document) return next(new ApiErrors(`${req.__('not_found')}`, 404));
             res.status(204).json();
         });
-    // ... other methods...
 
 }
 

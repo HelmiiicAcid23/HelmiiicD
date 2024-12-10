@@ -5,7 +5,7 @@ import ProductsSchema from "../SubCatagories/SubCatagories.schema";
 
 class Products_Service {
 
-    getAll = refractorService.getAll<Products>(ProductsSchema);
+    getAll = refractorService.getAll<Products>(ProductsSchema, 'products');
     createOne = refractorService.createOne<Products>(ProductsSchema);
     getOne = refractorService.getOne<Products>(ProductsSchema);
     updateOne = refractorService.updateOne<Products>(ProductsSchema);
