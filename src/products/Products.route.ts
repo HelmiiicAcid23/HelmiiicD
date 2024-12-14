@@ -10,7 +10,7 @@ ProductsRouter.route('/')
     .post(productsService.uploadImages, ProductsService.saveImage, ProductsService.createOne);
 ProductsRouter.route('/:id')
     .get(ProductsValidation.getOne, ProductsService.getOne)
-    .put(productsService.uploadImages, ProductsValidation.updateOne, ProductsService.updateOne)
+    .put(productsService.uploadImages, ProductsService.saveImage, ProductsValidation.updateOne, ProductsService.updateOne)
     .delete(ProductsValidation.deleteOne, ProductsService.deleteOne);
 
 export default ProductsRouter;

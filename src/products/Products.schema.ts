@@ -18,6 +18,12 @@ const ProductsSchema = new mongoose.Schema<Products>({
     // comments: [{type: mongoose.Schema.Types.ObjectId, ref: "comments"}],
 
 }, {timestamps: true});
+const imagesUrl = (document: Products.interface.ts) => {
+    if (document.cover) document.cover = `${process.env.BASE_URL}/images/products/${document.cover}`
+    if (document.images) document.images = document.images.map(image => `${process.env.BASE_URL}/images/products/${image}`)
+    return document;
+}
+ProductsSchema.post<Products>(`init`, imagesUrl).post<Products>(`save`, imagesUrl);
 
 ProductsSchema.pre<Products>(/^find/, function (next) {
     this.populate({path: 'subcatagory', select: 'name image'});
