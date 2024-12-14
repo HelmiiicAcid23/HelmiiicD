@@ -18,7 +18,7 @@ const ProductsSchema = new mongoose.Schema<Products>({
     // comments: [{type: mongoose.Schema.Types.ObjectId, ref: "comments"}],
 
 }, {timestamps: true});
-const imagesUrl = (document: Products.interface.ts) => {
+const imagesUrl = (document: Products) => {
     if (document.cover) document.cover = `${process.env.BASE_URL}/images/products/${document.cover}`
     if (document.images) document.images = document.images.map(image => `${process.env.BASE_URL}/images/products/${image}`)
     return document;

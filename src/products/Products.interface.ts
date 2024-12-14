@@ -13,6 +13,7 @@ export interface Products extends Document {
     readonly rating: number;
     readonly discount: number;
     images: string[];
+    cover: string;
     readonly rateAvg: number;
 
 

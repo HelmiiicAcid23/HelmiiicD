@@ -5,7 +5,7 @@ const usersSchema = new mongoose.Schema<users>({
     name: {type: String, required: true},
     username: {type: String, required: true, unique: true},
     email: {type: String, required: true, unique: true},
-    image: {type: String, required: false, default: 'user-default image.png'},
+    image: {type: String, required: false, default: 'user-default.png'},
     active: {type: Boolean, default: true},
     password: {type: String, required: false},
     role: {type: String, enum: ['admin', 'employee', 'user'], default: 'user'},
@@ -15,4 +15,9 @@ const usersSchema = new mongoose.Schema<users>({
     PasswordResetCodeExpires: Date,
     PasswordResetCodeVerified: Boolean,
 }, {timestamps: true})
+const imagesUrl = (document: users) => {
+    if (document.image && document.image.startsWith('user')) document.image = `${process.env.BASE_URL}/images/users/${document.image}`
+}
+usersSchema.post<users>(`init`, imagesUrl).post<users>(`save`, imagesUrl);
+
 export default mongoose.model<users>('users', usersSchema);
