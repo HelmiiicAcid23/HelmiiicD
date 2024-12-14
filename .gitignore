@@ -2,9 +2,9 @@
 /out-tsc
 node_modules
 dist
-..idea
+*.idea
 uploads
-..env
+*.env
 /node_modules
 npm-debug.log*
 yarn-debug.log*

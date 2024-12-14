@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 import i18n from 'i18n';
 import dbConnection from "./src/config/database";
 import mountRoutes from "./src";
-import hpp from "hpp";
+import hpp from "hpp"
+
 
 const app: express.Application = express();
 app.use(express.json({limit: '10kb'}));
