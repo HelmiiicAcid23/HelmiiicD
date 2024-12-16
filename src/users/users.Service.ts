@@ -5,6 +5,7 @@ import {NextFunction, Request, Response} from "express";
 import ApiErrors from "../utiles/api.errors";
 import {uploadSingleFile} from "../middlewares/uploadFiles.middlewares";
 import sharp from "sharp";
+import bcrypt from "bcryptjs";
 
 class UsersService {
     getAll = refractorService.getAll<users>(usersSchema);
@@ -23,7 +24,7 @@ class UsersService {
 
     changepassword = async (req: Request, res: Response, next: NextFunction) => {
         const user: users | null = await usersSchema.findById(req.params.id, {
-            password: req.body.password,
+            password: bcrypt.hash(req.body.password, 12),
             passwordChangedAt: Date.now,
         }, {new: true});
         if (!user) return next(new ApiErrors(`${req.__('not_found')}`, 404));

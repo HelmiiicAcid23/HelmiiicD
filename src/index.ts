@@ -5,6 +5,7 @@ import SubcatagoriesRouter from "./SubCatagories/SubCatagories.route";
 import globalErrors from "./middlewares/errors.middlewares";
 import ApiErrors from "./utiles/api.errors";
 import ProductsRouter from "./products/Products.route";
+import authRouter from "./auth/auth.route";
 
 declare module 'express' {
     interface Request {
@@ -18,6 +19,7 @@ const mountRoutes = (app: express.Application) => {
     app.use('/api/v1/subcatagories', SubcatagoriesRouter);
     app.use('/api/v1/Products', ProductsRouter);
     app.use('/api/v1/users', usersRouter);
+    app.use('/api/v1/auth', authRouter);
     app.all('*', (req: express.Request, res: express.Response, next: express.NextFunction) => {
         next(new ApiErrors(`route ${req.originalUrl} not found`, 400));
     });
