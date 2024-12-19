@@ -6,10 +6,19 @@ import i18n from 'i18n';
 import dbConnection from "./src/config/database";
 import mountRoutes from "./src";
 import hpp from "hpp"
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 
 const app: express.Application = express();
 app.use(express.json({limit: '10kb'}));
+app.use(cors({
+    origin: ['http://localhost:4200'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
+}));
+app.use(cookieParser());
 let server: Server;
 dotenv.config();
 app.use(express.static('uploads'));

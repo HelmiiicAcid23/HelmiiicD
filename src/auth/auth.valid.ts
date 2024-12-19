@@ -41,6 +41,25 @@ class AuthValidation {
             .isLength({min: 6, max: 20}).withMessage((valu, {req}) => req.__('validation_length_password')),
         validatorMiddleware
     ]
+    forgetPassword = [
+        body('email').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
+            .isEmail().withMessage((valu, {req}) => req.__('validation_field')),
+        validatorMiddleware
+    ]
+    changePassword = [
+        body('password')
+            .notEmpty().withMessage((val, {req}) => req.__('validation_field'))
+            .isLength({min: 6, max: 20}).withMessage((val, {req}) => req.__('validation_length_password')),
+        body('confirmPassword')
+            .notEmpty().withMessage((val, {req}) => req.__('validation_field'))
+            .isLength({min: 6, max: 20}).withMessage((val, {req}) => req.__('validation_length_password'))
+            .custom((val: string, {req}) => {
+                if (val !== req.body.password) throw new Error(`${req.__('validation_password_match')}`);
+                return true;
+            }),
+        validatorMiddleware
+    ]
+
 }
 
 const authValidation = new AuthValidation();

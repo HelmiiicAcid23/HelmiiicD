@@ -6,6 +6,7 @@ import ApiErrors from "../utiles/api.errors";
 import {uploadSingleFile} from "../middlewares/uploadFiles.middlewares";
 import sharp from "sharp";
 import bcrypt from "bcryptjs";
+import sanitization from "../utiles/sanitization";
 
 class UsersService {
     getAll = refractorService.getAll<users>(usersSchema);
@@ -18,17 +19,16 @@ class UsersService {
             active: req.body.active
         }, {new: true});
         if (!user) return next(new ApiErrors(`${req.__('not_found')}`, 404));
-        res.status(200).json({data: user});
+        res.status(200).json({data: sanitization.User(user)});
     }
     deleteOne = refractorService.deleteOne<users>(usersSchema);
-
     changepassword = async (req: Request, res: Response, next: NextFunction) => {
         const user: users | null = await usersSchema.findById(req.params.id, {
             password: bcrypt.hash(req.body.password, 12),
             passwordChangedAt: Date.now,
         }, {new: true});
         if (!user) return next(new ApiErrors(`${req.__('not_found')}`, 404));
-        res.status(200).json({data: user});
+        res.status(200).json({data: sanitization.User(user)});
     }
     uploadImage = uploadSingleFile(['image'], 'image');
     saveImage = async (req: Request, res: Response, next: NextFunction) => {

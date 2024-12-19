@@ -5,6 +5,9 @@ import usersSchema from "../users/users.schema";
 import ApiErrors from "../utiles/api.errors";
 import createTokens from "../utiles/token";
 import sanitization from "../utiles/sanitization";
+import jwt from "jsonwebtoken";
+import sendMail from "../utiles/sendMail";
+import crypto from "crypto";
 
 class AuthService {
     signup = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
@@ -19,7 +22,7 @@ class AuthService {
         res.status(201).json({token, data: sanitization.User(user)});
     });
     login = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-        const user = await usersSchema.findOne({$or: [{username: req.body.username}, {email: req.body.username}]});
+        const user = await usersSchema.findOne({$or: [{username: req.body.username}, {email: req.body.email}]});
         if (!user || user.hasPassword == false || !(await bcrypt.compare(req.body.password, user.password)))
             return next(new ApiErrors(`${req.__('invalid_login')}`, 400));
         const token = createTokens.accessToken(user._id, user.role);
@@ -35,7 +38,7 @@ class AuthService {
         const token = createTokens.accessToken(user._id, user.role);
         res.status(200).json({token, data: sanitization.User(user)});
     });
-    /*protectedRoutes = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    protectedRoutes = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         let token: string = '';
         if (req.headers.authorization && req.headers.authorization.startsWith('Bearer'))
             token = req.headers.authorization.split(' ')[1];
@@ -53,15 +56,85 @@ class AuthService {
         req.user = user;
         next();
     })
-    allowedTo = (...roles: string[]) =>
-        asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-            if (!roles.includes(req.user.role)) return next(new ApiErrors(`${req.__('allowed_to')}`, 403));
-            next();
-        })
+    verifyedPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        let token: string = '';
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer'))
+            token = req.headers.authorization.split(' ')[1];
+        else return next(new ApiErrors(`${req.__('check_login')}`, 401));
+
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+        const hashedResetCode: string = crypto.createHash('sha256').update(req.body.resetCode).digest('hex');
+        const user: any = await usersSchema.findOne({
+            _id: decoded._id,
+            passwordResetCode: hashedResetCode,
+            passwordResetCodeExpires: {$gt: Date.now()}
+        });
+        if (!user) return next(new ApiErrors(`${req.__('check_code_valid')}`, 403));
+
+        user.passwordResetCodeVerify = true;
+        if (user.image && user.image.startsWith(`${process.env.BASE_URL}`)) user.image = user.image.split('/').pop();
+        await user.save({validateModifiedOnly: true});
+
+        res.status(200).json({success: true});
+    })
+    forgetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = await usersSchema.findOne({email: req.body.email})
+        if (!user) return next(new ApiErrors(`${req.__('check_email')}`, 404));
+
+        const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const hashedResetCode: string = crypto.createHash('sha256').update(resetCode).digest('hex');
+        const message = `your reset code is ${resetCode}`
+        const options = {
+            message,
+            email: user.email,
+            subject: 'Reset Code'
+        }
+        try {
+            await sendMail(options);
+            user.PasswordResetCode = hashedResetCode;
+            user.PasswordResetCodeExpires = Date.now() + (10 * 60 * 1000);
+            user.PasswordResetCodeVerified = false;
+            if (user.image && user.image.startsWith(`${process.env.BASE_URL}`)) user.image = user.image.split('/').pop();
+            await user.save({validateModifiedOnly: true})
+        } catch (e) {
+            console.log(e);
+            return next(new ApiErrors(`${req.__('send_email')}`, 500));
+        }
+        const Token = createTokens.resetToken(user._id)
+        res.status(200).json({Token, success: true});
+    })
+    resetPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        let token: string = '';
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer'))
+            token = req.headers.authorization.split(' ')[1];
+        else return next(new ApiErrors(`${req.__('check_reset_code')}`, 403));
+
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+        const user: any = await usersSchema.findOne({
+            _id: decoded._id,
+            passwordResetCodeVerify: true,
+        });
+        if (!user) return next(new ApiErrors(`${req.__('check_code_verify')}`, 403));
+
+        user.password = req.body.password;
+        user.passwordResetCodeExpires = undefined;
+        user.passwordResetCode = undefined;
+        user.passwordResetCodeVerify = undefined;
+        user.passwordChangedAt = Date.now();
+        if (user.image && user.image.startsWith(`${process.env.BASE_URL}`)) user.image = user.image.split('/').pop();
+        await user.save({validateModifiedOnly: true});
+
+        res.status(200).json({success: true});
+    })
+    allowedTo = (...roles: string[]) => asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        if (!roles.includes(req.user.role)) return next(new ApiErrors(`${req.__('allowed_to')}`, 403));
+        next();
+    })
     checkActive = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
         if (!req.user.active) return next(new ApiErrors(`${req.__('check_active')}`, 403));
         next();
-    })*/
+    })
+
 }
 
 const authService = new AuthService();

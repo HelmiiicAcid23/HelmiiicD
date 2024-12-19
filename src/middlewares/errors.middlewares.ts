@@ -1,4 +1,5 @@
 import express from 'express';
+import ApiErrors from "../utiles/api.errors";
 
 const devErrors = (err: any, res: express.Response) =>
     res.status(err.statusCode!).json({
@@ -13,9 +14,12 @@ const prodErrors = (err: any, res: express.Response) =>
         status: err.status,
         message: err.message
     });
+const handleJWTExpired = (message: string, res: express.Response) => new ApiErrors(message, 401)
+
 const globalErrors = (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'Error';
+    if (err.name === 'TokenExpiredError' || err.name === 'JsonWebTokenError') err = handleJWTExpired(`${req.__('session_expired')}`, res);
     if (process.env.NODE_ENV == 'development') devErrors(err, res)
     else prodErrors(err, res);
 };
