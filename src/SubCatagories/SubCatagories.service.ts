@@ -10,7 +10,7 @@ class subcatagories_Service {
         next();
     };
 
-    filterSubcategories(req: Request, res: Response, next: NextFunction) {
+    filterSubcatagories(req: Request, res: Response, next: NextFunction) {
         const filterData: any = {};
         if (req.params.catagoryId) filterData.catagory = req.params.catagoryId;
         req.filterData = filterData;

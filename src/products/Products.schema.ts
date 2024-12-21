@@ -3,21 +3,26 @@ import {Products} from "./Products.interface";
 
 const ProductsSchema = new mongoose.Schema<Products>({
     name: {type: String, required: true, trim: true},
-    image: String,
+    description: {type: String, required: true, trim: true},
     catagory: {type: mongoose.Schema.Types.ObjectId, ref: "catagories"},
     subcatagory: {type: mongoose.Schema.Types.ObjectId, ref: "SubCatagories"},
     price: {type: Number, required: true},
-    description: {type: String, required: true},
-    quantity: {type: Number, required: true},
-    sold: {type: Boolean, default: false},
-    rating: {type: Number, default: 0},
     discount: {type: Number, default: 0},
+    priceAfterDiscount: {type: Number},
+    quantity: {type: Number, default: 0},
+    rating: {type: Number, default: 0},
     images: [String],
+    cover: String,
     rateAvg: {type: Number, default: 0},
+    sold: {type: Number, default: 0},
     // reviews: [{type: mongoose.Schema.Types.ObjectId, ref: "reviews"}],
     // comments: [{type: mongoose.Schema.Types.ObjectId, ref: "comments"}],
 
-}, {timestamps: true});
+}, {toJSON: {virtuals: true}, toObject: {virtuals: true}, timestamps: true});
+
+ProductsSchema.virtual('reviews', {localField: '_id', foreignField: 'product', ref: 'reviews'})
+
+
 const imagesUrl = (document: Products) => {
     if (document.cover) document.cover = `${process.env.BASE_URL}/images/products/${document.cover}`
     if (document.images) document.images = document.images.map(image => `${process.env.BASE_URL}/images/products/${image}`)

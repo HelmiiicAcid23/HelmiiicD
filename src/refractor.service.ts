@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler"
 import mongoose from "mongoose";
 import ApiErrors from "./utiles/api.errors";
 import Features from "./utiles/features";
+import sanitization from "./utiles/sanitization";
 
 class RefractorService {
     getAll = <modeltype>(model: mongoose.Model<any>, modelName?: string) =>
@@ -21,21 +22,24 @@ class RefractorService {
             const Document: modeltype = await model.create(req.body);
             res.status(201).json({data: Document});
         });
-    getOne = <modeltype>(model: mongoose.Model<any>) =>
+    getOne = <modeltype>(model: mongoose.Model<any>, modelName?: string, populationOptions?: string) =>
         asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-            const Document: modeltype | null = await model.findById(req.params.id);
+            let query: any = model.findById(req.params.id);
+            if (populationOptions) query = query.populate(populationOptions);
+            let Document: any = await query;
             if (!Document) return next(new ApiErrors(`${req.__('not_found')}`, 404));
+            if (modelName === 'users') Document = sanitization.User(Document)
             res.status(201).json({data: Document});
         });
     updateOne = <modeltype>(model: mongoose.Model<any>) =>
         asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-            const Document: modeltype | null = await model.findByIdAndUpdate(req.params.id, req.body, {new: true});
+            const Document: any = await model.findByIdAndUpdate(req.params.id, req.body, {new: true});
             if (!Document) return next(new ApiErrors(`${req.__('not_found')}`, 404));
-            res.status(201).json({data: Document});
+            res.status(200).json({data: Document});
         });
     deleteOne = <modeltype>(model: mongoose.Model<any>) =>
         asyncHandler(async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-            const Document: modeltype | null = await model.findByIdAndDelete(req.params.id);
+            const Document: any = await model.findByIdAndDelete(req.params.id);
             if (!Document) return next(new ApiErrors(`${req.__('not_found')}`, 404));
             res.status(204).json();
         });

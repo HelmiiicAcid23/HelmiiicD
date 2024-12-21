@@ -25,20 +25,20 @@ class ProductsValidate {
                     req.body.priceAfterDiscount = req.body.price - (req.body.price * valu / 100)
                     return true;
                 }),
-            body('category')
-                .notEmpty().withMessage((valu, {req}) => req.__('validation_field'))
+            body('catagory')
+                // .notEmpty().withMessage((valu, {req}) => req.__('validation_field'))
                 .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
                 .custom(async (val: string, {req}) => {
-                    const category = await catagoriesSchema.findById(val);
-                    if (!category) throw new Error(`${req.__('validation_value')}`);
+                    const catagory = await catagoriesSchema.findById(val);
+                    if (!catagory) throw new Error(`${req.__('validation_value')}`);
                     return true;
                 }),
-            body('subcategory')
+            body('subcatagory')
                 .notEmpty().withMessage((valu, {req}) => req.__('validation_field'))
                 .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
                 .custom(async (valu: string, {req}) => {
-                    const subcategory = await subcatagoriesSchema.findById(valu);
-                    if (!subcategory || subcategory.catagory._id!.toString() !== req.body.category.toString()) throw new Error(`${req.__('validation_value')}`);
+                    const subcatagory = await subcatagoriesSchema.findById(valu);
+                    if (!subcatagory || subcatagory.catagory._id!.toString() !== req.body.catagory.toString()) throw new Error(`${req.__('validation_value')}`);
                     return true;
                 })
             , validatorMiddleware]
@@ -63,15 +63,15 @@ class ProductsValidate {
         body('category').optional()
             .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
             .custom(async (val: string, {req}) => {
-                const category = await catagoriesSchema.findById(val);
-                if (!category) throw new Error(`${req.__('validation_value')}`);
+                const catagory = await catagoriesSchema.findById(val);
+                if (!catagory) throw new Error(`${req.__('validation_value')}`);
                 return true;
             }),
-        body('subcategory').optional()
+        body('subcatagory').optional()
             .isMongoId().withMessage((valu, {req}) => req.__('invalid_id'))
             .custom(async (valu: string, {req}) => {
-                const subcategory = await subcatagoriesSchema.findById(valu);
-                if (!subcategory || subcategory.catagory._id!.toString() !== req.body.category.toString()) throw new Error(`${req.__('validation_value')}`);
+                const subcatagory = await subcatagoriesSchema.findById(valu);
+                if (!subcatagory || subcatagory.catagory._id!.toString() !== req.body.catagory.toString()) throw new Error(`${req.__('validation_value')}`);
                 return true;
             })
         , validatorMiddleware]

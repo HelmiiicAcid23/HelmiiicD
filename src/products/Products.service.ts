@@ -10,7 +10,7 @@ class Products_Service {
 
     getAll = refractorService.getAll<Products>(ProductsSchema, 'products');
     createOne = refractorService.createOne<Products>(ProductsSchema);
-    getOne = refractorService.getOne<Products>(ProductsSchema);
+    getOne = refractorService.getOne<Products>(ProductsSchema, 'products', 'reviews');
     updateOne = refractorService.updateOne<Products>(ProductsSchema);
     deleteOne = refractorService.deleteOne<Products>(ProductsSchema);
     uploadImages = uploadMultiFiles(['image'], [{name: 'cover', maxCount: 1}, {name: 'images', maxCount: 5}]);

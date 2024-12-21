@@ -10,6 +10,9 @@ import profileRouter from "./profile/profile.Route";
 import googleRoute from "./google/google.route";
 import wishlistRouter from "./wishlist/wishlist.Route";
 import addressRouter from "./address/address.Route";
+import reviewsRouter from "./Reviews/reviews.Route";
+import couponsRouter from "./coupons/Coupons.Route";
+import cartRouter from "./cart/cart.Route";
 
 declare module 'express' {
     interface Request {
@@ -29,6 +32,9 @@ const mountRoutes = (app: express.Application) => {
     app.use('/api/v1/wishlist', wishlistRouter);
     app.use('/api/v1/address', addressRouter);
     app.use('/api/v1/profile', profileRouter);
+    app.use('/api/v1/reviews', reviewsRouter);
+    app.use('/api/v1/coupons', couponsRouter);
+    app.use('/api/v1/cart', cartRouter);
     app.all('*', (req: express.Request, res: express.Response, next: express.NextFunction) => {
         next(new ApiErrors(`route ${req.originalUrl} not found`, 400));
     });
