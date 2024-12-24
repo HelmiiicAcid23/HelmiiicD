@@ -19,11 +19,11 @@ export interface users extends Document {
 
 }
 
-type Address = {
+export interface Address {
     street: string;
     city: string;
     state: string;
     zip: string;
-};
+}
 
 type Role = 'admin' | 'user' | 'employee'

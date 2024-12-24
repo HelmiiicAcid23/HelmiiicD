@@ -1,6 +1,6 @@
 import refractorService from "../refractor.service";
 import {Products} from "./Products.interface";
-import ProductsSchema from "../SubCatagories/SubCatagories.schema";
+import ProductsSchema from "../products/Products.schema";
 import {NextFunction, Request, Response} from "express";
 import sharp from "sharp";
 import {uploadMultiFiles} from "../middlewares/uploadFiles.middlewares";

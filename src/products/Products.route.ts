@@ -7,7 +7,7 @@ const ProductsRouter: Router = Router();
 
 ProductsRouter.route('/')
     .get(ProductsService.getAll)
-    .post(authService.protectedRoutes, authService.checkActive, authService.allowedTo('admin', 'employee'), ProductsService.uploadImages, ProductsService.saveImage, ProductsValidation.createOne, ProductsService.createOne);
+    .post(ProductsService.uploadImages, ProductsService.saveImage, ProductsValidation.createOne, ProductsService.createOne);
 ProductsRouter.route('/:id')
     .get(ProductsValidation.getOne, ProductsService.getOne)
     .put(authService.protectedRoutes, authService.checkActive, authService.allowedTo('admin', 'employee'), ProductsService.uploadImages, ProductsService.saveImage, ProductsValidation.updateOne, ProductsService.updateOne)
