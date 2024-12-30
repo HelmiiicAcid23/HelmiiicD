@@ -9,7 +9,7 @@ ordersRouter.use(authService.protectedRoutes, authService.checkActive);
 
 ordersRouter.route('/')
     .get(ordersService.filterOrders, ordersService.getAll)
-    .post(authService.allowedTo('user'), ordersService.createCashOrder);
+    .post(authService.allowedTo('user'), ordersValidation.createCashOrder, ordersService.createCashOrder);
 
 ordersRouter.put('/:id/deliver', ordersValidation.payandDeliver, authService.allowedTo('admin', 'employee'), ordersService.deliverOrder);
 ordersRouter.put('/:id/pay', ordersValidation.payandDeliver, authService.allowedTo('admin', 'employee'), ordersService.payOrder);

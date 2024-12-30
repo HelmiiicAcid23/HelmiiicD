@@ -3,9 +3,8 @@ import validatorMiddleware from "../middlewares/validator.middleware";
 
 class OrdersValidation {
     createCashOrder = [
-        body('address'),
-
-
+        body('address').notEmpty().withMessage((val, {req}) => req.__('validation_field'))
+            .isLength({min: 2, max: 50}).withMessage((val, {req}) => req.__('validation_length_short')),
         validatorMiddleware
     ]
     /*.notEmpty().withMessage((val, {req}) => req.__('validation_field'))
